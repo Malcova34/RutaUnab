@@ -1,5 +1,6 @@
 package com.rutaunab.app.presentation.screens.auth
 
+import com.rutaunab.app.R
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,6 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -32,9 +34,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 
+
 @Preview
 @Composable
-fun LoginScreen(onClickRegister: () -> Unit = {}, onSuccesfullLogin: () -> Unit = {}) {
+fun LoginScreen(
+    onClickRegister: () -> Unit = {},
+    onClickRecovery: () -> Unit = {},
+    onSuccesfullLogin: () -> Unit = {}
+) {
     var inputEmail by remember { mutableStateOf("") }
     var inputPassword by remember { mutableStateOf("") }
 
@@ -124,7 +131,11 @@ fun LoginScreen(onClickRegister: () -> Unit = {}, onSuccesfullLogin: () -> Unit 
                                     tint = Color(0xFF9CA3AF)
                                 )
                             },
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Email,
+                                imeAction = ImeAction.Next
+                            ),
+                            singleLine = true,
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
@@ -154,7 +165,11 @@ fun LoginScreen(onClickRegister: () -> Unit = {}, onSuccesfullLogin: () -> Unit 
                                 )
                             },
                             visualTransformation = PasswordVisualTransformation(),
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Password,
+                                imeAction = ImeAction.Done
+                            ),
+                            singleLine = true,
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
@@ -176,7 +191,7 @@ fun LoginScreen(onClickRegister: () -> Unit = {}, onSuccesfullLogin: () -> Unit 
                             fontSize = 13.sp,
                             color = Color(0xFFFEA604),
                             modifier = Modifier
-                                .clickable { /* TODO */ }
+                                .clickable { onClickRecovery() }
                                 .padding(vertical = 4.dp)
                         )
                     }

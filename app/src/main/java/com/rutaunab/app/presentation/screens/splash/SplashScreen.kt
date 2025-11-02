@@ -21,19 +21,22 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.graphicsLayer
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun SplashScreen(onFinished: () -> Unit = {}) {
-    // Estados para controlar animaciones secuenciales
+
+    // --- Estados para controlar animaciones secuenciales
     var showLogo by remember { mutableStateOf(false) }
     var showText by remember { mutableStateOf(false) }
 
-    // Animación infinita de bounce para el logo
+    // --- Animación infinita de rebote (bounce) - reduje el desplazamiento
     val infiniteTransition = rememberInfiniteTransition(label = "bounce")
     val bounceOffset by infiniteTransition.animateFloat(
         initialValue = 0f,
-        targetValue = -20f,
+        targetValue = -10f,
         animationSpec = infiniteRepeatable(
             animation = tween(600, easing = FastOutSlowInEasing),
             repeatMode = RepeatMode.Reverse
@@ -41,26 +44,27 @@ fun SplashScreen(onFinished: () -> Unit = {}) {
         label = "bounce"
     )
 
-    // Animación de pulsación para el halo
+    // --- Animación de pulsación (halo)
     val pulseScale by infiniteTransition.animateFloat(
         initialValue = 1f,
-        targetValue = 1.1f,
+        targetValue = 1.06f,
         animationSpec = infiniteRepeatable(
-            animation = tween(1500, easing = FastOutSlowInEasing),
+            animation = tween(1400, easing = FastOutSlowInEasing),
             repeatMode = RepeatMode.Reverse
         ),
         label = "pulse"
     )
 
-    // Lógica de animación con delays
+    // --- Secuencia de aparición y transición
     LaunchedEffect(Unit) {
         delay(50)
         showLogo = true
-        delay(200)
+        delay(180)
         showText = true
-        delay(1800) // tiempo total del splash
+        delay(1500)
         onFinished()
     }
+
 
     Box(
         modifier = Modifier
@@ -72,82 +76,88 @@ fun SplashScreen(onFinished: () -> Unit = {}) {
                         Color(0xFFFEA604),
                         Color(0xFFFEB92C)
                     ),
-                    start = androidx.compose.ui.geometry.Offset(0f, 0f),
-                    end = androidx.compose.ui.geometry.Offset(1000f, 1000f)
+                    start = Offset(0f, 0f),
+                    end = Offset(1000f, 1000f)
                 )
-            ),
+            )
+            .padding(top = 24.dp)
+            .graphicsLayer(clip = false),
         contentAlignment = Alignment.Center
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Logo Animation con bounce
+            // --- LOGO CON ANIMACIÓN ---
             AnimatedVisibility(
                 visible = showLogo,
                 enter = fadeIn(animationSpec = tween(600)) +
                         scaleIn(
-                            initialScale = 0.5f,
+                            initialScale = 0.6f,
                             animationSpec = tween(600, easing = FastOutSlowInEasing)
                         )
             ) {
+
                 Box(
                     contentAlignment = Alignment.Center,
-                    modifier = Modifier.offset(y = bounceOffset.dp)
+                    modifier = Modifier
+                        .offset(y = bounceOffset.dp)
+                        .graphicsLayer(clip = false)
                 ) {
-                    // Halo blanco difuminado con pulsación
+                    // Halo blanco difuminado
                     Box(
                         modifier = Modifier
-                            .size(140.dp * pulseScale)
-                            .background(Color.White.copy(alpha = 0.2f), CircleShape)
-                            .blur(30.dp)
+                            .size((130.dp * pulseScale).coerceAtLeast(120.dp))
+                            .background(Color.White.copy(alpha = 0.22f), CircleShape)
+                            .blur(24.dp)
                     )
-                    // Círculo principal
+
+                    // Círculo principal con el logo
                     Surface(
-                        modifier = Modifier.size(120.dp),
+                        modifier = Modifier.size(112.dp),
                         shape = CircleShape,
                         color = Color.White,
-                        shadowElevation = 12.dp
+                        shadowElevation = 10.dp
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Image(
                                 painter = painterResource(id = R.drawable.img_icon_unab),
                                 contentDescription = "Logo UNAB",
                                 colorFilter = ColorFilter.tint(Color(0xFFFEA604)),
-                                modifier = Modifier.size(80.dp)
+                                modifier = Modifier.size(72.dp)
                             )
                         }
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(28.dp))
 
-            // Nombre de la app con animación de deslizamiento
+            // --- TEXTO CON ANIMACIÓN ---
             AnimatedVisibility(
                 visible = showText,
-                enter = fadeIn(animationSpec = tween(600)) +
+                enter = fadeIn(animationSpec = tween(550)) +
                         slideInVertically(
-                            initialOffsetY = { it / 2 },
-                            animationSpec = tween(600, easing = FastOutSlowInEasing)
+                            initialOffsetY = { it / 3 },
+                            animationSpec = tween(550, easing = FastOutSlowInEasing)
                         )
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     Text(
                         text = "Ruta UNAB",
-                        fontSize = 48.sp,
+                        fontSize = 42.sp,
                         color = Color.White,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center,
-                        letterSpacing = (-1).sp
+                        letterSpacing = (-0.5).sp
                     )
                     Text(
                         text = "Sistema de Transporte Universitario",
                         color = Color(0xFFFFF3E0),
-                        fontSize = 16.sp,
+                        fontSize = 14.sp,
                         textAlign = TextAlign.Center
                     )
                 }
