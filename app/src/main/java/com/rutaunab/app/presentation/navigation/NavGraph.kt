@@ -4,10 +4,14 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import com.rutaunab.app.presentation.screens.auth.LoginScreen
-import com.rutaunab.app.presentation.screens.auth.RegisterScreen
-import com.rutaunab.app.presentation.screens.auth.RecoveryScreen
+import com.rutaunab.app.presentation.screens.auth.login.LoginScreen
+import com.rutaunab.app.presentation.screens.auth.register.RegisterScreen
+import com.rutaunab.app.presentation.screens.auth.recovery.RecoveryScreen
 import com.rutaunab.app.presentation.screens.splash.SplashScreen
+import com.rutaunab.app.presentation.screens.home.HomeScreen
+import com.rutaunab.app.presentation.screens.main.route.RoutesScreen
+import com.rutaunab.app.presentation.screens.main.qr.QRScreen
+import com.rutaunab.app.presentation.screens.main.map.MapScreen
 
 
 
@@ -30,8 +34,9 @@ fun NavGraph(){
                 onClickRegister = { navController.navigate(Routes.REGISTER) },
                 onClickRecovery = { navController.navigate(Routes.RECOVERY) },
                 onSuccesfullLogin = {
-                    // TODO: Navegar a la pantalla principal cuando esté lista
-                    // navController.navigate(Routes.HOME)
+                    navController.navigate(Routes.HOME) {
+                        popUpTo(Routes.LOGIN) { inclusive = true }
+                    }
                 }
             )
         }
@@ -40,8 +45,10 @@ fun NavGraph(){
             RegisterScreen(
                 onClickBack = { navController.popBackStack() },
                 onSuccesfulRegister = {
-                    // Navegar de regreso al login después del registro exitoso
-                    navController.popBackStack()
+                    // Navegar a Home después del registro exitoso
+                    navController.navigate(Routes.HOME) {
+                        popUpTo(Routes.SPLASH) { inclusive = true }
+                    }
                 }
             )
         }
@@ -50,6 +57,49 @@ fun NavGraph(){
             RecoveryScreen(
                 onClickBack = { navController.popBackStack() }
             )
+        }
+
+        composable(Routes.HOME){
+            HomeScreen(
+                onNavigateToProfile = { navController.navigate(Routes.PROFILE) },
+                onNavigateToRoutes = { navController.navigate(Routes.ROUTES) },
+                onNavigateToQR = { navController.navigate(Routes.QR) },
+                onNavigateToMap = { navController.navigate(Routes.MAP) }
+            )
+        }
+
+        composable(Routes.ROUTES){
+            RoutesScreen(
+                onNavigateToHome = { navController.navigate(Routes.HOME) },
+                onNavigateToRoutes = { /* Ya estamos en Routes */ },
+                onNavigateToQR = { navController.navigate(Routes.QR) },
+                onNavigateToMap = { navController.navigate(Routes.MAP) },
+                onNavigateToProfile = { navController.navigate(Routes.PROFILE) }
+            )
+        }
+
+        composable(Routes.QR){
+            QRScreen(
+                onNavigateToHome = { navController.navigate(Routes.HOME) },
+                onNavigateToRoutes = { navController.navigate(Routes.ROUTES) },
+                onNavigateToQR = { /* Ya estamos en QR */ },
+                onNavigateToMap = { navController.navigate(Routes.MAP) },
+                onNavigateToProfile = { navController.navigate(Routes.PROFILE) }
+            )
+        }
+
+        composable(Routes.MAP){
+            MapScreen(
+                onNavigateToHome = { navController.navigate(Routes.HOME) },
+                onNavigateToRoutes = { navController.navigate(Routes.ROUTES) },
+                onNavigateToQR = { navController.navigate(Routes.QR) },
+                onNavigateToMap = { /* Ya estamos en Map */ },
+                onNavigateToProfile = { navController.navigate(Routes.PROFILE) }
+            )
+        }
+
+        composable(Routes.PROFILE){
+            // ProfileScreen (Por implementar)
         }
 
     }

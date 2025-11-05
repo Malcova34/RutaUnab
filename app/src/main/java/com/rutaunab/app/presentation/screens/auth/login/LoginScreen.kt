@@ -1,4 +1,4 @@
-package com.rutaunab.app.presentation.screens.auth
+package com.rutaunab.app.presentation.screens.auth.login
 
 import com.rutaunab.app.R
 import androidx.compose.foundation.Image
@@ -32,32 +32,53 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 
 
 
-@Preview
 @Composable
 fun LoginScreen(
+    viewModel: LoginViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
     onClickRegister: () -> Unit = {},
     onClickRecovery: () -> Unit = {},
     onSuccesfullLogin: () -> Unit = {}
 ) {
-    var inputEmail by remember { mutableStateOf("") }
-    var inputPassword by remember { mutableStateOf("") }
+    val uiState by viewModel.uiState.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+    
+    // Mostrar mensaje de éxito y navegar
+    LaunchedEffect(uiState.isLoginSuccessful) {
+        if (uiState.isLoginSuccessful) {
+            snackbarHostState.showSnackbar(
+                message = "¡Bienvenido! Ingresando...",
+                duration = SnackbarDuration.Short
+            )
+            kotlinx.coroutines.delay(1000) // Esperar 1 segundo
+            viewModel.resetLoginSuccess()
+            onSuccesfullLogin()
+        }
+    }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                Brush.linearGradient(
-                    colors = listOf(
-                        Color(0xFFFFF8F0),
-                        Color.White,
-                        Color(0xFFFFF8F0)
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .background(
+                    Brush.linearGradient(
+                        colors = listOf(
+                            Color(0xFFFFF8F0),
+                            Color.White,
+                            Color(0xFFFFF8F0)
+                        )
                     )
                 )
-            )
-    ) {
+        ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -121,8 +142,9 @@ fun LoginScreen(
                             color = Color(0xFF374151)
                         )
                         OutlinedTextField(
-                            value = inputEmail,
-                            onValueChange = { inputEmail = it },
+                            value = uiState.email,
+                            onValueChange = { viewModel.onEmailChange(it) },
+                            isError = uiState.isEmailError,
                             placeholder = { Text("ejemplo@unab.cl") },
                             leadingIcon = {
                                 Icon(
@@ -140,7 +162,10 @@ fun LoginScreen(
                             shape = RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = Color(0xFFFEA604),
-                                unfocusedBorderColor = Color(0xFFE5E7EB)
+                                unfocusedBorderColor = Color(0xFFE5E7EB),
+                                focusedTextColor = Color(0xFF1F2937),
+                                unfocusedTextColor = Color(0xFF1F2937),
+                                cursorColor = Color(0xFFFEA604)
                             )
                         )
                     }
@@ -154,8 +179,9 @@ fun LoginScreen(
                             color = Color(0xFF374151)
                         )
                         OutlinedTextField(
-                            value = inputPassword,
-                            onValueChange = { inputPassword = it },
+                            value = uiState.password,
+                            onValueChange = { viewModel.onPasswordChange(it) },
+                            isError = uiState.isPasswordError,
                             placeholder = { Text("••••••••") },
                             leadingIcon = {
                                 Icon(
@@ -174,7 +200,10 @@ fun LoginScreen(
                             shape = RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = Color(0xFFFEA604),
-                                unfocusedBorderColor = Color(0xFFE5E7EB)
+                                unfocusedBorderColor = Color(0xFFE5E7EB),
+                                focusedTextColor = Color(0xFF1F2937),
+                                unfocusedTextColor = Color(0xFF1F2937),
+                                cursorColor = Color(0xFFFEA604)
                             )
                         )
                     }
@@ -196,9 +225,44 @@ fun LoginScreen(
                         )
                     }
 
+                    // Mostrar errores de validación
+                    uiState.emailErrorMessage?.let { errorMsg ->
+                        Text(
+                            text = errorMsg,
+                            fontSize = 12.sp,
+                            color = Color(0xFFEF4444),
+                            modifier = Modifier.padding(start = 4.dp)
+                        )
+                    }
+                    
+                    uiState.passwordErrorMessage?.let { errorMsg ->
+                        Text(
+                            text = errorMsg,
+                            fontSize = 12.sp,
+                            color = Color(0xFFEF4444),
+                            modifier = Modifier.padding(start = 4.dp)
+                        )
+                    }
+                    
+                    // Mostrar error general
+                    uiState.errorMessage?.let { errorMsg ->
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFFFEF2F2))
+                        ) {
+                            Text(
+                                text = errorMsg,
+                                fontSize = 13.sp,
+                                color = Color(0xFFEF4444),
+                                modifier = Modifier.padding(12.dp)
+                            )
+                        }
+                    }
+
                     // Botón de Iniciar Sesión
                     Button(
-                        onClick = { onSuccesfullLogin() },
+                        onClick = { viewModel.onLoginClick() },
+                        enabled = !uiState.isLoading,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(56.dp),
@@ -207,17 +271,25 @@ fun LoginScreen(
                             containerColor = Color(0xFFFEA604)
                         )
                     ) {
-                        Text(
-                            text = "Iniciar Sesión",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                            contentDescription = null,
-                            modifier = Modifier.size(20.dp)
-                        )
+                        if (uiState.isLoading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = Color.White,
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            Text(
+                                text = "Iniciar Sesión",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
                     }
 
                     // Divisor con "o"
@@ -270,5 +342,7 @@ fun LoginScreen(
                 }
             }
         }
+        }
     }
 }
+

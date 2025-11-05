@@ -1,4 +1,4 @@
-package com.rutaunab.app.presentation.screens.auth
+package com.rutaunab.app.presentation.screens.auth.register
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -30,30 +29,45 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 
-@Preview
 @Composable
-fun RegisterScreen(onClickBack: () -> Unit = {}, onSuccesfulRegister: () -> Unit = {}) {
-    // Estados del formulario
-    var inputName by remember { mutableStateOf("") }
-    var inputEmail by remember { mutableStateOf("") }
-    var inputStudentId by remember { mutableStateOf("") }
-    var inputCareer by remember { mutableStateOf("") }
-    var inputPassword by remember { mutableStateOf("") }
-    var inputPasswordConfirmation by remember { mutableStateOf("") }
+fun RegisterScreen(
+    viewModel: RegisterViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+    onClickBack: () -> Unit = {},
+    onSuccesfulRegister: () -> Unit = {}
+) {
+    val uiState by viewModel.uiState.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+    
+    // Mostrar mensaje de éxito y navegar
+    LaunchedEffect(uiState.isRegisterSuccessful) {
+        if (uiState.isRegisterSuccessful) {
+            snackbarHostState.showSnackbar(
+                message = "¡Registro exitoso! Redirigiendo...",
+                duration = SnackbarDuration.Short
+            )
+            kotlinx.coroutines.delay(1500) // Esperar 1.5 segundos para que vea el mensaje
+            viewModel.resetRegisterSuccess()
+            onSuccesfulRegister()
+        }
+    }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                Brush.linearGradient(
-                    colors = listOf(
-                        Color(0xFFFFF8F0),
-                        Color.White,
-                        Color(0xFFFFF8F0)
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .background(
+                    Brush.linearGradient(
+                        colors = listOf(
+                            Color(0xFFFFF8F0),
+                            Color.White,
+                            Color(0xFFFFF8F0)
+                        )
                     )
                 )
-            )
-    ) {
+        ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -105,25 +119,15 @@ fun RegisterScreen(onClickBack: () -> Unit = {}, onSuccesfulRegister: () -> Unit
                         .padding(20.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    // Campo Nombre Completo
+                    // Todos los campos de texto permanecen igual...
+                    // Campo Nombre
                     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                        Text(
-                            text = "Nombre Completo",
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = Color(0xFF374151)
-                        )
+                        Text("Nombre Completo", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = Color(0xFF374151))
                         OutlinedTextField(
-                            value = inputName,
-                            onValueChange = { inputName = it },
+                            value = uiState.name,
+                            onValueChange = { viewModel.onNameChange(it) },
                             placeholder = { Text("Juan Pérez") },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.Person,
-                                    contentDescription = "Nombre",
-                                    tint = Color(0xFF9CA3AF)
-                                )
-                            },
+                            leadingIcon = { Icon(Icons.Default.Person, "Nombre", tint = Color(0xFF9CA3AF)) },
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Text,
                                 imeAction = ImeAction.Next
@@ -133,30 +137,22 @@ fun RegisterScreen(onClickBack: () -> Unit = {}, onSuccesfulRegister: () -> Unit
                             shape = RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = Color(0xFFFEA604),
-                                unfocusedBorderColor = Color(0xFFE5E7EB)
+                                unfocusedBorderColor = Color(0xFFE5E7EB),
+                                focusedTextColor = Color(0xFF1F2937),
+                                unfocusedTextColor = Color(0xFF1F2937),
+                                cursorColor = Color(0xFFFEA604)
                             )
                         )
                     }
-
-                    // Campo Email
+                    
+                    // Email
                     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                        Text(
-                            text = "Correo Institucional",
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = Color(0xFF374151)
-                        )
+                        Text("Correo Institucional", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = Color(0xFF374151))
                         OutlinedTextField(
-                            value = inputEmail,
-                            onValueChange = { inputEmail = it },
+                            value = uiState.email,
+                            onValueChange = { viewModel.onEmailChange(it) },
                             placeholder = { Text("ejemplo@unab.cl") },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.Email,
-                                    contentDescription = "Email",
-                                    tint = Color(0xFF9CA3AF)
-                                )
-                            },
+                            leadingIcon = { Icon(Icons.Default.Email, "Email", tint = Color(0xFF9CA3AF)) },
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Email,
                                 imeAction = ImeAction.Next
@@ -166,30 +162,22 @@ fun RegisterScreen(onClickBack: () -> Unit = {}, onSuccesfulRegister: () -> Unit
                             shape = RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = Color(0xFFFEA604),
-                                unfocusedBorderColor = Color(0xFFE5E7EB)
+                                unfocusedBorderColor = Color(0xFFE5E7EB),
+                                focusedTextColor = Color(0xFF1F2937),
+                                unfocusedTextColor = Color(0xFF1F2937),
+                                cursorColor = Color(0xFFFEA604)
                             )
                         )
                     }
 
-                    // Campo ID UNAB
+                    // ID UNAB
                     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                        Text(
-                            text = "ID UNAB",
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = Color(0xFF374151)
-                        )
+                        Text("ID UNAB", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = Color(0xFF374151))
                         OutlinedTextField(
-                            value = inputStudentId,
-                            onValueChange = { inputStudentId = it },
+                            value = uiState.studentId,
+                            onValueChange = { viewModel.onStudentIdChange(it) },
                             placeholder = { Text("202012345") },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.Badge,
-                                    contentDescription = "ID",
-                                    tint = Color(0xFF9CA3AF)
-                                )
-                            },
+                            leadingIcon = { Icon(Icons.Default.Badge, "ID", tint = Color(0xFF9CA3AF)) },
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Number,
                                 imeAction = ImeAction.Next
@@ -199,30 +187,22 @@ fun RegisterScreen(onClickBack: () -> Unit = {}, onSuccesfulRegister: () -> Unit
                             shape = RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = Color(0xFFFEA604),
-                                unfocusedBorderColor = Color(0xFFE5E7EB)
+                                unfocusedBorderColor = Color(0xFFE5E7EB),
+                                focusedTextColor = Color(0xFF1F2937),
+                                unfocusedTextColor = Color(0xFF1F2937),
+                                cursorColor = Color(0xFFFEA604)
                             )
                         )
                     }
 
-                    // Campo Carrera
+                    // Carrera
                     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                        Text(
-                            text = "Carrera",
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = Color(0xFF374151)
-                        )
+                        Text("Carrera", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = Color(0xFF374151))
                         OutlinedTextField(
-                            value = inputCareer,
-                            onValueChange = { inputCareer = it },
+                            value = uiState.career,
+                            onValueChange = { viewModel.onCareerChange(it) },
                             placeholder = { Text("Ingeniería Civil Informática") },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.School,
-                                    contentDescription = "Carrera",
-                                    tint = Color(0xFF9CA3AF)
-                                )
-                            },
+                            leadingIcon = { Icon(Icons.Default.School, "Carrera", tint = Color(0xFF9CA3AF)) },
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Text,
                                 imeAction = ImeAction.Next
@@ -232,30 +212,22 @@ fun RegisterScreen(onClickBack: () -> Unit = {}, onSuccesfulRegister: () -> Unit
                             shape = RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = Color(0xFFFEA604),
-                                unfocusedBorderColor = Color(0xFFE5E7EB)
+                                unfocusedBorderColor = Color(0xFFE5E7EB),
+                                focusedTextColor = Color(0xFF1F2937),
+                                unfocusedTextColor = Color(0xFF1F2937),
+                                cursorColor = Color(0xFFFEA604)
                             )
                         )
                     }
 
-                    // Campo Contraseña
+                    // Contraseña
                     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                        Text(
-                            text = "Contraseña",
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = Color(0xFF374151)
-                        )
+                        Text("Contraseña", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = Color(0xFF374151))
                         OutlinedTextField(
-                            value = inputPassword,
-                            onValueChange = { inputPassword = it },
+                            value = uiState.password,
+                            onValueChange = { viewModel.onPasswordChange(it) },
                             placeholder = { Text("••••••••") },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.Lock,
-                                    contentDescription = "Contraseña",
-                                    tint = Color(0xFF9CA3AF)
-                                )
-                            },
+                            leadingIcon = { Icon(Icons.Default.Lock, "Contraseña", tint = Color(0xFF9CA3AF)) },
                             visualTransformation = PasswordVisualTransformation(),
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Password,
@@ -266,30 +238,22 @@ fun RegisterScreen(onClickBack: () -> Unit = {}, onSuccesfulRegister: () -> Unit
                             shape = RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = Color(0xFFFEA604),
-                                unfocusedBorderColor = Color(0xFFE5E7EB)
+                                unfocusedBorderColor = Color(0xFFE5E7EB),
+                                focusedTextColor = Color(0xFF1F2937),
+                                unfocusedTextColor = Color(0xFF1F2937),
+                                cursorColor = Color(0xFFFEA604)
                             )
                         )
                     }
 
-                    // Campo Confirmar Contraseña
+                    // Confirmar Contraseña
                     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                        Text(
-                            text = "Confirmar Contraseña",
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = Color(0xFF374151)
-                        )
+                        Text("Confirmar Contraseña", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = Color(0xFF374151))
                         OutlinedTextField(
-                            value = inputPasswordConfirmation,
-                            onValueChange = { inputPasswordConfirmation = it },
+                            value = uiState.passwordConfirmation,
+                            onValueChange = { viewModel.onPasswordConfirmationChange(it) },
                             placeholder = { Text("••••••••") },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.Lock,
-                                    contentDescription = "Confirmar",
-                                    tint = Color(0xFF9CA3AF)
-                                )
-                            },
+                            leadingIcon = { Icon(Icons.Default.Lock, "Confirmar", tint = Color(0xFF9CA3AF)) },
                             visualTransformation = PasswordVisualTransformation(),
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Password,
@@ -300,12 +264,15 @@ fun RegisterScreen(onClickBack: () -> Unit = {}, onSuccesfulRegister: () -> Unit
                             shape = RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = Color(0xFFFEA604),
-                                unfocusedBorderColor = Color(0xFFE5E7EB)
+                                unfocusedBorderColor = Color(0xFFE5E7EB),
+                                focusedTextColor = Color(0xFF1F2937),
+                                unfocusedTextColor = Color(0xFF1F2937),
+                                cursorColor = Color(0xFFFEA604)
                             )
                         )
                     }
 
-                    // Términos y condiciones
+                    // Términos
                     Text(
                         text = "Al registrarte, aceptas nuestros Términos de Servicio y Política de Privacidad",
                         fontSize = 11.sp,
@@ -314,45 +281,62 @@ fun RegisterScreen(onClickBack: () -> Unit = {}, onSuccesfulRegister: () -> Unit
                         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
                     )
 
-                    // Botón de Registro
-                    Button(
-                        onClick = { onSuccesfulRegister() },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFFEA604)
-                        )
-                    ) {
-                        Text(
-                            text = "Crear Cuenta",
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.SemiBold
-                        )
+                    // Mostrar error
+                    uiState.errorMessage?.let { errorMsg ->
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFFFEF2F2))
+                        ) {
+                            Text(
+                                text = errorMsg,
+                                fontSize = 13.sp,
+                                color = Color(0xFFEF4444),
+                                modifier = Modifier.padding(12.dp)
+                            )
+                        }
                     }
 
-                    // Enlace para iniciar sesión
+                    // Botón Registrar
+                    Button(
+                        onClick = { viewModel.onRegisterClick() },
+                        enabled = !uiState.isLoading,
+                        modifier = Modifier.fillMaxWidth().height(50.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFEA604))
+                    ) {
+                        if (uiState.isLoading) {
+                            Row(
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(20.dp),
+                                    color = Color.White,
+                                    strokeWidth = 2.dp
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    "Creando cuenta...",
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color = Color.White
+                                )
+                            }
+                        } else {
+                            Text("Crear Cuenta", fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
+                        }
+                    }
+
+                    // Link a login
                     Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { onClickBack() }
-                            .padding(vertical = 4.dp),
+                        modifier = Modifier.fillMaxWidth().clickable { onClickBack() }.padding(vertical = 4.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = buildAnnotatedString {
-                                withStyle(style = SpanStyle(color = Color(0xFF6B7280))) {
-                                    append("¿Ya tienes cuenta? ")
-                                }
-                                withStyle(
-                                    style = SpanStyle(
-                                        color = Color(0xFFFEA604),
-                                        fontWeight = FontWeight.Medium
-                                    )
-                                ) {
-                                    append("Inicia sesión")
-                                }
+                                withStyle(SpanStyle(color = Color(0xFF6B7280))) { append("¿Ya tienes cuenta? ") }
+                                withStyle(SpanStyle(color = Color(0xFFFEA604), fontWeight = FontWeight.Medium)) { append("Inicia sesión") }
                             },
                             fontSize = 13.sp,
                             textAlign = TextAlign.Center
@@ -361,5 +345,7 @@ fun RegisterScreen(onClickBack: () -> Unit = {}, onSuccesfulRegister: () -> Unit
                 }
             }
         }
+        }
     }
 }
+
