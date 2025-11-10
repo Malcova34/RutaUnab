@@ -1,5 +1,7 @@
 package com.rutaunab.app.presentation.screens.main.qr
 
+import android.graphics.Bitmap
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -88,7 +91,7 @@ fun QRScreen(
                 item {
                     QRCodeCard(
                         userName = uiState.user?.name ?: "Usuario",
-                        qrCode = uiState.qrCode
+                        qrBitmap = uiState.qrBitmap
                     )
                 }
 
@@ -233,7 +236,7 @@ private fun UserInfoCard(
 @Composable
 private fun QRCodeCard(
     userName: String,
-    qrCode: String
+    qrBitmap: Bitmap?
 ) {
     Card(
         modifier = Modifier
@@ -267,58 +270,30 @@ private fun QRCodeCard(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // QR Code Container
-            Box(
-                modifier = Modifier
-                    .size(256.dp)
-                    .background(Color.White)
-                    .padding(24.dp)
-            ) {
-                // Border
+            // QR Code Real
+            if (qrBitmap != null) {
                 Box(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .background(
-                            color = Color(0xFFF9FAFB),
-                            shape = RoundedCornerShape(12.dp)
-                        )
-                        .padding(4.dp)
+                        .size(256.dp)
+                        .background(Color.White, RoundedCornerShape(12.dp))
+                        .padding(16.dp)
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(
-                                color = Color.White,
-                                shape = RoundedCornerShape(8.dp)
-                            )
-                    ) {
-                        // QR Code Placeholder - Grid pattern
-                        QRCodePlaceholder()
-
-                        // Center Logo
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Surface(
-                                modifier = Modifier.size(48.dp),
-                                shape = RoundedCornerShape(8.dp),
-                                color = Color.White,
-                                shadowElevation = 4.dp
-                            ) {
-                                Box(
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.QrCode,
-                                        contentDescription = "QR",
-                                        tint = Color(0xFFFEA604),
-                                        modifier = Modifier.size(32.dp)
-                                    )
-                                }
-                            }
-                        }
-                    }
+                    Image(
+                        bitmap = qrBitmap.asImageBitmap(),
+                        contentDescription = "Código QR",
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+            } else {
+                // Placeholder mientras carga
+                Box(
+                    modifier = Modifier.size(256.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        color = Color(0xFFFEA604),
+                        modifier = Modifier.size(48.dp)
+                    )
                 }
             }
 
@@ -329,6 +304,14 @@ private fun QRCodeCard(
                 text = "Código válido para: $userName",
                 fontSize = 12.sp,
                 color = Color(0xFF9CA3AF)
+            )
+            
+            // Validity info
+            Text(
+                text = "Válido por 24 horas",
+                fontSize = 11.sp,
+                color = Color(0xFFBFDBFE),
+                modifier = Modifier.padding(top = 4.dp)
             )
         }
     }

@@ -9,6 +9,7 @@ data class MapUiState(
     val routes: List<RouteFilter> = emptyList(),
     val activeBuses: List<BusLocation> = emptyList(),
     val userLocation: LatLng? = null,
+    val shouldCenterOnUser: Boolean = false,
     val errorMessage: String? = null
 )
 

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">UNAB Route</string>
+    
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_routes">Routes</string>
+    <string name="nav_qr">QR</string>
+    <string name="nav_map">Map</string>
+    <string name="nav_profile">Profile</string>
+    
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_notifications">Notifications</string>
+    <string name="settings_push_notifications">Push Notifications</string>
+    <string name="settings_push_notifications_desc">Receive important alerts</string>
+    <string name="settings_route_alerts">Route Alerts</string>
+    <string name="settings_route_alerts_desc">When the route is nearby</string>
+    <string name="settings_schedule_reminders">Schedule Reminders</string>
+    <string name="settings_schedule_reminders_desc">Schedule notifications</string>
+    
+    <!-- Appearance -->
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_dark_mode">Dark Mode</string>
+    <string name="settings_dark_mode_desc">Dark theme for the app</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_language_spanish">Español</string>
+    <string name="settings_language_english">English</string>
+    
+    <!-- Account -->
+    <string name="settings_account">Account</string>
+    <string name="settings_edit_profile">Edit Profile</string>
+    <string name="settings_logout">Sign Out</string>
+    <string name="settings_logout_confirmation">Are you sure you want to sign out?</string>
+    <string name="settings_logout_confirm">Yes, sign out</string>
+    <string name="settings_cancel">Cancel</string>
+    
+    <!-- QR -->
+    <string name="qr_title">My QR Code</string>
+    <string name="qr_subtitle">Scan to access the bus</string>
+    <string name="qr_access_code">Your Access Code</string>
+    <string name="qr_show_driver">Show this code to the driver</string>
+    <string name="qr_valid_for">Valid code for: %1$s</string>
+    <string name="qr_validity">Valid for 24 hours</string>
+    
+    <!-- Driver Scanner -->
+    <string name="driver_scanner_title">QR Scanner</string>
+    <string name="driver_scanner_subtitle">Scan student code</string>
+    <string name="driver_online">Online</string>
+    <string name="driver_camera_permission">Camera permission required</string>
+    <string name="driver_camera_permission_desc">We need camera access to scan QR codes</string>
+    <string name="driver_allow_camera">Allow Camera</string>
+    <string name="driver_scan_instruction">Place the QR code inside the frame</string>
+    <string name="driver_scan_automatic">Scanning is automatic</string>
+    <string name="driver_access_valid">✓ ACCESS GRANTED</string>
+    <string name="driver_access_denied">✗ ACCESS DENIED</string>
+    
+    <!-- Statistics -->
+    <string name="stats_accesses">Accesses</string>
+    <string name="stats_rejected">Rejected</string>
+    <string name="stats_today">Today</string>
+    <string name="stats_recent_scans">Recent scans</string>
+    <string name="stats_total_trips">Total trips</string>
+    <string name="stats_favorite_route">Favorite route</string>
+    
+    <!-- Map -->
+    <string name="map_your_location">Your location</string>
+    <string name="map_loading">Loading map...</string>
+    <string name="map_permission_required">Location permission required</string>
+    
+    <!-- Common -->
+    <string name="loading">Loading...</string>
+    <string name="error">Error</string>
+    <string name="retry">Retry</string>
+    <string name="ok">OK</string>
+    <string name="save">Save</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+</resources>
+

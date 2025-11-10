@@ -1,3 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">RutaUnab</string>
+    <string name="app_name">Ruta UNAB</string>
+    
+    <!-- Navegación -->
+    <string name="nav_home">Inicio</string>
+    <string name="nav_routes">Rutas</string>
+    <string name="nav_qr">QR</string>
+    <string name="nav_map">Mapa</string>
+    <string name="nav_profile">Perfil</string>
+    
+    <!-- Settings -->
+    <string name="settings_title">Configuración</string>
+    <string name="settings_notifications">Notificaciones</string>
+    <string name="settings_push_notifications">Notificaciones Push</string>
+    <string name="settings_push_notifications_desc">Recibe alertas importantes</string>
+    <string name="settings_route_alerts">Alertas de Ruta</string>
+    <string name="settings_route_alerts_desc">Cuando la ruta esté cerca</string>
+    <string name="settings_schedule_reminders">Recordatorios de Horario</string>
+    <string name="settings_schedule_reminders_desc">Notificaciones de horarios</string>
+    
+    <!-- Apariencia -->
+    <string name="settings_appearance">Apariencia</string>
+    <string name="settings_dark_mode">Modo Oscuro</string>
+    <string name="settings_dark_mode_desc">Tema oscuro para la aplicación</string>
+    <string name="settings_language">Idioma</string>
+    <string name="settings_language_spanish">Español</string>
+    <string name="settings_language_english">English</string>
+    
+    <!-- Cuenta -->
+    <string name="settings_account">Cuenta</string>
+    <string name="settings_edit_profile">Editar Perfil</string>
+    <string name="settings_logout">Cerrar Sesión</string>
+    <string name="settings_logout_confirmation">¿Estás seguro de que deseas cerrar sesión?</string>
+    <string name="settings_logout_confirm">Sí, cerrar sesión</string>
+    <string name="settings_cancel">Cancelar</string>
+    
+    <!-- QR -->
+    <string name="qr_title">Mi Código QR</string>
+    <string name="qr_subtitle">Escanea para acceder al bus</string>
+    <string name="qr_access_code">Tu Código de Acceso</string>
+    <string name="qr_show_driver">Muestra este código al conductor</string>
+    <string name="qr_valid_for">Código válido para: %1$s</string>
+    <string name="qr_validity">Válido por 24 horas</string>
+    
+    <!-- Driver Scanner -->
+    <string name="driver_scanner_title">Escáner QR</string>
+    <string name="driver_scanner_subtitle">Escanea el código del estudiante</string>
+    <string name="driver_online">En línea</string>
+    <string name="driver_camera_permission">Permiso de cámara requerido</string>
+    <string name="driver_camera_permission_desc">Necesitamos acceso a tu cámara para escanear códigos QR</string>
+    <string name="driver_allow_camera">Permitir Cámara</string>
+    <string name="driver_scan_instruction">Coloca el código QR dentro del marco</string>
+    <string name="driver_scan_automatic">El escaneo es automático</string>
+    <string name="driver_access_valid">✓ ACCESO VÁLIDO</string>
+    <string name="driver_access_denied">✗ ACCESO DENEGADO</string>
+    
+    <!-- Statistics -->
+    <string name="stats_accesses">Accesos</string>
+    <string name="stats_rejected">Rechazados</string>
+    <string name="stats_today">Hoy</string>
+    <string name="stats_recent_scans">Últimos escaneos</string>
+    <string name="stats_total_trips">Viajes realizados</string>
+    <string name="stats_favorite_route">Ruta favorita</string>
+    
+    <!-- Map -->
+    <string name="map_your_location">Tu ubicación</string>
+    <string name="map_loading">Cargando mapa...</string>
+    <string name="map_permission_required">Permiso de ubicación requerido</string>
+    
+    <!-- Common -->
+    <string name="loading">Cargando...</string>
+    <string name="error">Error</string>
+    <string name="retry">Reintentar</string>
+    <string name="ok">Aceptar</string>
+    <string name="save">Guardar</string>
+    <string name="edit">Editar</string>
+    <string name="delete">Eliminar</string>
 </resources>

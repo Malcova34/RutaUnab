@@ -28,12 +28,16 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        
+
         // Inyectar API Key en el manifest
         manifestPlaceholders["MAPS_API_KEY"] = localProperties.getProperty("MAPS_API_KEY") ?: ""
-        
+
         // Inyectar URL de API de buses en BuildConfig
-        buildConfigField("String", "BUS_API_URL", "\"${localProperties.getProperty("BUS_API_URL") ?: ""}\"")
+        buildConfigField(
+            "String",
+            "BUS_API_URL",
+            "\"${localProperties.getProperty("BUS_API_URL") ?: ""}\""
+        )
     }
 
     buildTypes {
@@ -64,7 +68,8 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
-    
+    implementation("androidx.appcompat:appcompat:1.6.1")
+
     // Compose
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
@@ -72,14 +77,14 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation("androidx.compose.material:material-icons-extended:1.7.8")
-    
+
     // Navigation
     implementation(libs.androidx.navigation.compose)
-    
+
     // ViewModel Compose
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
-    
+
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
@@ -90,27 +95,27 @@ dependencies {
     implementation("androidx.room:room-runtime:$roomVersion")
     implementation("androidx.room:room-ktx:$roomVersion")
     // ksp("androidx.room:room-compiler:$roomVersion")  // Descomentar cuando configures KSP
-    
+
     // Retrofit & OkHttp
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.retrofit2:converter-simplexml:2.9.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
-    
+
     // Hilt (Dependency Injection)
     // implementation("com.google.dagger:hilt-android:2.50")
     // ksp("com.google.dagger:hilt-compiler:2.50")
     // implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
-    
+
     // Google Maps
     implementation("com.google.maps.android:maps-compose:4.3.0")
     implementation("com.google.android.gms:play-services-maps:18.2.0")
     implementation("com.google.android.gms:play-services-location:21.0.1")
-    
+
     // Coil (Image Loading)
     implementation("io.coil-kt:coil-compose:2.5.0")
-    
+
     // Testing
     testImplementation(libs.junit)
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
@@ -118,7 +123,7 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
-    
+
     // Debug
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
@@ -129,7 +134,27 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore")
     // implementation("com.google.firebase:firebase-storage")  // Descomentar cuando se necesite para fotos de perfil
 
+
+    
+    // QR Code Generation & Scanning
+    implementation("com.google.zxing:core:3.5.2")
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+
+    // Gson para parsear JSON del QR
+    implementation("com.google.code.gson:gson:2.10.1")
+
+    // CameraX para el escáner
+    implementation("androidx.camera:camera-camera2:1.3.1")
+    implementation("androidx.camera:camera-lifecycle:1.3.1")
+    implementation("androidx.camera:camera-view:1.3.1")
+
+    // Accompanist Permissions
+    implementation("com.google.accompanist:accompanist-permissions:0.32.0")
+    
+    // WorkManager para tareas en background
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
 }
+
 
 // IMPORTANTE: El plugin de Google Services debe estar AL FINAL del archivo
 apply(plugin = "com.google.gms.google-services")

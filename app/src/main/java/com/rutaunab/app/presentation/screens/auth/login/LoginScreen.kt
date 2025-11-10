@@ -44,7 +44,7 @@ fun LoginScreen(
     viewModel: LoginViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
     onClickRegister: () -> Unit = {},
     onClickRecovery: () -> Unit = {},
-    onSuccesfullLogin: () -> Unit = {}
+    onSuccesfullLogin: (com.rutaunab.app.domain.model.UserType) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -58,7 +58,8 @@ fun LoginScreen(
             )
             kotlinx.coroutines.delay(1000) // Esperar 1 segundo
             viewModel.resetLoginSuccess()
-            onSuccesfullLogin()
+            val userType = uiState.userType ?: com.rutaunab.app.domain.model.UserType.STUDENT
+            onSuccesfullLogin(userType)
         }
     }
 

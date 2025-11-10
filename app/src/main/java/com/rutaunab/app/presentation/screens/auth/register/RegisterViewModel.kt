@@ -1,9 +1,11 @@
 package com.rutaunab.app.presentation.screens.auth.register
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rutaunab.app.data.firebase.auth.FirebaseAuthDataSource
 import com.rutaunab.app.data.firebase.firestore.FirestoreDataSource
+import com.rutaunab.app.data.local.SessionManager
 import com.rutaunab.app.data.repository.AuthRepositoryImpl
 import com.rutaunab.app.domain.usecase.auth.RegisterUseCase
 import com.rutaunab.app.domain.util.Result
@@ -14,6 +16,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class RegisterViewModel(
+    private val context: Context? = null,
     private val registerUseCase: RegisterUseCase = RegisterUseCase(
         AuthRepositoryImpl(
             FirebaseAuthDataSource(),
@@ -24,6 +27,10 @@ class RegisterViewModel(
 
     private val _uiState = MutableStateFlow(RegisterUiState())
     val uiState: StateFlow<RegisterUiState> = _uiState.asStateFlow()
+    
+    private val sessionManager: SessionManager? by lazy {
+        context?.let { SessionManager.getInstance(it) }
+    }
 
     fun onNameChange(name: String) {
         _uiState.update { it.copy(name = name) }
@@ -64,6 +71,15 @@ class RegisterViewModel(
             
             when (result) {
                 is Result.Success -> {
+                    val user = result.data
+                    val userType = user?.userType ?: com.rutaunab.app.domain.model.UserType.STUDENT
+                    
+                    // Guardar sesión por 15 días
+                    sessionManager?.saveSession(
+                        userId = user?.id ?: "",
+                        userType = userType.name
+                    )
+                    
                     _uiState.update { 
                         it.copy(
                             isLoading = false, 

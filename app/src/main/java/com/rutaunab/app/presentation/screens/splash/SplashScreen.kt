@@ -26,11 +26,15 @@ import androidx.compose.ui.graphics.graphicsLayer
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun SplashScreen(onFinished: () -> Unit = {}) {
-
+fun SplashScreen(
+    onFinished: (hasSession: Boolean, userType: String?) -> Unit = { _, _ -> }
+) {
     // --- Estados para controlar animaciones secuenciales
     var showLogo by remember { mutableStateOf(false) }
     var showText by remember { mutableStateOf(false) }
+    
+    // Context para SessionManager
+    val context = androidx.compose.ui.platform.LocalContext.current
 
     // --- Animación infinita de rebote (bounce) - reduje el desplazamiento
     val infiniteTransition = rememberInfiniteTransition(label = "bounce")
@@ -61,8 +65,12 @@ fun SplashScreen(onFinished: () -> Unit = {}) {
         showLogo = true
         delay(180)
         showText = true
-        delay(1500)
-        onFinished()
+        delay(1800)
+        // Verificar sesión
+        val sessionManager = com.rutaunab.app.data.local.SessionManager.getInstance(context)
+        val hasSession = sessionManager.isSessionValid()
+        val userType = sessionManager.getUserType()
+        onFinished(hasSession, userType)
     }
 
 

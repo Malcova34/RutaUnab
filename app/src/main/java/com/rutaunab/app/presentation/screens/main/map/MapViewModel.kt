@@ -1,9 +1,11 @@
 package com.rutaunab.app.presentation.screens.main.map
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import com.rutaunab.app.data.api.BusTrackingDataSource
+import com.rutaunab.app.data.location.LocationService
 import com.rutaunab.app.data.repository.BusRepositoryImpl
 import com.rutaunab.app.domain.model.EstadoBus
 import com.rutaunab.app.domain.usecase.bus.GetBusesLocationUseCase
@@ -17,6 +19,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class MapViewModel(
+    private val context: Context? = null,
     // TODO: Inyectar con Hilt cuando esté configurado
     private val getBusesLocationUseCase: GetBusesLocationUseCase = GetBusesLocationUseCase(
         BusRepositoryImpl(
@@ -29,10 +32,16 @@ class MapViewModel(
     val uiState: StateFlow<MapUiState> = _uiState.asStateFlow()
     
     private var refreshJob: Job? = null
+    private var locationJob: Job? = null
+    
+    private val locationService: LocationService? by lazy {
+        context?.let { LocationService.getInstance(it) }
+    }
 
     init {
         loadMapData()
         startAutoRefresh()
+        observeUserLocation()
     }
 
     private fun loadMapData() {
@@ -172,12 +181,45 @@ class MapViewModel(
         }
     }
 
+    /**
+     * Observa la ubicación del usuario en tiempo real
+     */
+    private fun observeUserLocation() {
+        locationService?.let { service ->
+            if (service.hasLocationPermission()) {
+                locationJob = viewModelScope.launch {
+                    try {
+                        service.observeLocation().collect { location ->
+                            _uiState.update { it.copy(userLocation = location) }
+                        }
+                    } catch (e: Exception) {
+                        android.util.Log.e("MapViewModel", "Error observing location: ${e.message}")
+                    }
+                }
+            } else {
+                // Si no hay permisos, intentar obtener última ubicación conocida
+                viewModelScope.launch {
+                    val lastLocation = service.getLastLocation()
+                    if (lastLocation != null) {
+                        _uiState.update { it.copy(userLocation = lastLocation) }
+                    }
+                }
+            }
+        }
+    }
+    
     fun onRouteFilterClick(routeName: String?) {
         _uiState.update { it.copy(selectedRoute = routeName) }
     }
 
     fun onCenterToUserLocation() {
-        // TODO: Implementar centrado a ubicación del usuario
+        _uiState.value.userLocation?.let { location ->
+            _uiState.update { it.copy(shouldCenterOnUser = true) }
+        }
+    }
+    
+    fun onCameraMoved() {
+        _uiState.update { it.copy(shouldCenterOnUser = false) }
     }
     
     fun refreshBuses() {
@@ -187,6 +229,7 @@ class MapViewModel(
     override fun onCleared() {
         super.onCleared()
         refreshJob?.cancel()
+        locationJob?.cancel()
     }
 }
 

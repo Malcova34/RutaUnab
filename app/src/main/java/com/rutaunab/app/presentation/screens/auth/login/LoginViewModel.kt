@@ -1,11 +1,15 @@
 package com.rutaunab.app.presentation.screens.auth.login
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rutaunab.app.data.firebase.auth.FirebaseAuthDataSource
 import com.rutaunab.app.data.firebase.firestore.FirestoreDataSource
+import com.rutaunab.app.data.local.SessionManager
 import com.rutaunab.app.data.repository.AuthRepositoryImpl
+import com.rutaunab.app.domain.model.UserType
 import com.rutaunab.app.domain.usecase.auth.LoginUseCase
+import com.rutaunab.app.domain.usecase.auth.GetCurrentUserUseCase
 import com.rutaunab.app.domain.util.Result
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,7 +18,14 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
+    private val context: Context? = null,
     private val loginUseCase: LoginUseCase = LoginUseCase(
+        AuthRepositoryImpl(
+            FirebaseAuthDataSource(),
+            FirestoreDataSource()
+        )
+    ),
+    private val getCurrentUserUseCase: GetCurrentUserUseCase = GetCurrentUserUseCase(
         AuthRepositoryImpl(
             FirebaseAuthDataSource(),
             FirestoreDataSource()
@@ -24,6 +35,10 @@ class LoginViewModel(
 
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
+    
+    private val sessionManager: SessionManager? by lazy {
+        context?.let { SessionManager.getInstance(it) }
+    }
 
     fun onEmailChange(email: String) {
         _uiState.update { it.copy(
@@ -54,9 +69,19 @@ class LoginViewModel(
             
             when (result) {
                 is Result.Success -> {
+                    val user = result.data
+                    val userType = user?.userType ?: UserType.STUDENT
+                    
+                    // Guardar sesión por 15 días
+                    sessionManager?.saveSession(
+                        userId = user?.id ?: "",
+                        userType = userType.name
+                    )
+                    
                     _uiState.update { it.copy(
                         isLoading = false,
                         isLoginSuccessful = true,
+                        userType = userType,
                         errorMessage = null
                     ) }
                 }

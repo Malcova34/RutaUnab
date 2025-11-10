@@ -73,20 +73,19 @@ fun MapScreen(
                         .weight(1f)
                 ) {
                     GoogleMapView(
-                        userLocation = uiState.userLocation ?: LatLng(-33.0364, -71.5305),
-                        buses = uiState.activeBuses,
-                        selectedRoute = uiState.selectedRoute
+                        uiState = uiState,
+                        onCameraMoved = viewModel::onCameraMoved
                     )
-
-                    // Current Location Button
+                    
+                    // Botón "Mi ubicación"
                     FloatingActionButton(
-                        onClick = { viewModel.onCenterToUserLocation() },
+                        onClick = viewModel::onCenterToUserLocation,
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
                             .padding(16.dp),
                         containerColor = Color.White,
                         elevation = FloatingActionButtonDefaults.elevation(
-                            defaultElevation = 8.dp
+                            defaultElevation = 6.dp
                         )
                     ) {
                         Icon(
@@ -192,12 +191,27 @@ private fun HeaderSection(
 
 @Composable
 private fun GoogleMapView(
-    userLocation: LatLng,
-    buses: List<BusLocation>,
-    selectedRoute: String?
+    uiState: MapUiState,
+    onCameraMoved: () -> Unit
 ) {
+    val userLocation = uiState.userLocation ?: LatLng(7.119444, -73.120833) // Default Bucaramanga
+    
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(userLocation, 14f)
+    }
+    
+    // Centrar en ubicación del usuario cuando shouldCenterOnUser sea true
+    androidx.compose.runtime.LaunchedEffect(uiState.shouldCenterOnUser) {
+        if (uiState.shouldCenterOnUser && uiState.userLocation != null) {
+            cameraPositionState.animate(
+                com.google.android.gms.maps.CameraUpdateFactory.newLatLngZoom(
+                    uiState.userLocation,
+                    16f
+                ),
+                durationMs = 1000
+            )
+            onCameraMoved()
+        }
     }
 
     GoogleMap(
@@ -208,31 +222,35 @@ private fun GoogleMapView(
         ),
         uiSettings = MapUiSettings(
             zoomControlsEnabled = false,
-            myLocationButtonEnabled = false
+            myLocationButtonEnabled = false,
+            compassEnabled = true
         )
     ) {
-        // User Location Marker
-        Marker(
-            state = MarkerState(position = userLocation),
-            title = "Tu ubicación",
-            snippet = "UNAB Viña del Mar"
-        )
+        // User Location Marker (Azul)
+        uiState.userLocation?.let { location ->
+            Marker(
+                state = MarkerState(position = location),
+                title = "Tu ubicación",
+                snippet = "Ubicación actual",
+                icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
+            )
+        }
 
         // Bus Markers
-        buses.forEach { bus ->
+        uiState.activeBuses.forEach { bus ->
             // Filtrar por ruta seleccionada
-            if (selectedRoute == null || selectedRoute == "Todas" || bus.route == selectedRoute) {
+            if (uiState.selectedRoute == null || uiState.selectedRoute == "Todas" || bus.route == uiState.selectedRoute) {
+                val markerColor = when (bus.route) {
+                    "Ruta 1" -> BitmapDescriptorFactory.HUE_BLUE
+                    "Ruta 2" -> BitmapDescriptorFactory.HUE_GREEN
+                    else -> BitmapDescriptorFactory.HUE_RED
+                }
+                
                 Marker(
                     state = MarkerState(position = bus.latLng),
                     title = bus.route,
                     snippet = bus.location,
-                    icon = BitmapDescriptorFactory.defaultMarker(
-                        when (bus.route) {
-                            "Ruta 1" -> BitmapDescriptorFactory.HUE_BLUE
-                            "Ruta 2" -> BitmapDescriptorFactory.HUE_GREEN
-                            else -> BitmapDescriptorFactory.HUE_RED
-                        }
-                    )
+                    icon = BitmapDescriptorFactory.defaultMarker(markerColor)
                 )
             }
         }
