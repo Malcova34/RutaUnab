@@ -2,7 +2,7 @@
 
 ## 🎯 Visión General del Proyecto
 
-RutaUNAB es una aplicación móvil completa desarrollada en **Kotlin** con **Jetpack Compose** que implementa un sistema de transporte universitario para la Universidad Nacional Andrés Bello (UNAB). La aplicación conecta estudiantes y conductores de buses mediante autenticación segura, mapas en tiempo real, sistema QR y notificaciones inteligentes.
+RutaUNAB es una aplicación móvil completa desarrollada en **Kotlin** con **Jetpack Compose** que implementa un sistema de transporte universitario para la  (UNAB). La aplicación conecta estudiantes y conductores de buses mediante autenticación segura, mapas en tiempo real, sistema QR y notificaciones inteligentes.
 
 ## 🏗️ Arquitectura del Sistema
 
