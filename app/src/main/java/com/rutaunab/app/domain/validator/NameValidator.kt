@@ -10,23 +10,31 @@ object NameValidator {
      */
     fun validate(name: String): ValidationResult {
         val trimmedName = name.trim()
-        
+
+        if (trimmedName.isBlank()) {
+            return ValidationResult.Invalid("El nombre no puede estar vacío")
+        }
+
+        val length = trimmedName.length
+        if (length < MIN_LENGTH) {
+            return ValidationResult.Invalid("El nombre debe tener al menos $MIN_LENGTH caracteres")
+        }
+        if (length > MAX_LENGTH) {
+            return ValidationResult.Invalid("El nombre no puede tener más de $MAX_LENGTH caracteres")
+        }
+
+        var hasSpace = false
+        var hasDigit = false
+
+        for (char in trimmedName) {
+            if (char == ' ' && !hasSpace) hasSpace = true
+            if (char.isDigit() && !hasDigit) hasDigit = true
+            if (hasSpace && hasDigit) break
+        }
+
         return when {
-            trimmedName.isBlank() -> {
-                ValidationResult.Invalid("El nombre no puede estar vacío")
-            }
-            trimmedName.length < MIN_LENGTH -> {
-                ValidationResult.Invalid("El nombre debe tener al menos $MIN_LENGTH caracteres")
-            }
-            trimmedName.length > MAX_LENGTH -> {
-                ValidationResult.Invalid("El nombre no puede tener más de $MAX_LENGTH caracteres")
-            }
-            !trimmedName.contains(" ") -> {
-                ValidationResult.Invalid("Por favor ingrese su nombre completo")
-            }
-            trimmedName.any { it.isDigit() } -> {
-                ValidationResult.Invalid("El nombre no puede contener números")
-            }
+            !hasSpace -> ValidationResult.Invalid("Por favor ingrese su nombre completo")
+            hasDigit -> ValidationResult.Invalid("El nombre no puede contener números")
             else -> ValidationResult.Valid
         }
     }

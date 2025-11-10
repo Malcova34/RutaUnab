@@ -21,14 +21,13 @@ class RoutesViewModel : ViewModel() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             
-            // TODO: En el futuro, esto debería venir de un Use Case que consulte la API
-            // Por ahora, usamos datos mock
+
             val mockRoutes = listOf(
                 RouteInfo(
                     id = 1,
                     name = "Ruta 1",
-                    destination = "Metro República",
-                    stops = 8,
+                    destination = "Casona Unab",
+                    stops = 12,
                     frequency = "15 min",
                     status = "En servicio",
                     color = RouteColor.BLUE
@@ -36,8 +35,8 @@ class RoutesViewModel : ViewModel() {
                 RouteInfo(
                     id = 2,
                     name = "Ruta 2",
-                    destination = "Providencia",
-                    stops = 12,
+                    destination = "El Bosque",
+                    stops = 16,
                     frequency = "20 min",
                     status = "En servicio",
                     color = RouteColor.GREEN
@@ -53,9 +52,6 @@ class RoutesViewModel : ViewModel() {
         }
     }
 
-    fun onRouteClick(routeId: Int) {
-        // TODO: En el futuro, se puede navegar a una pantalla de detalle de ruta
-        // O actualizar el estado para mostrar información específica
-    }
+
 }
 

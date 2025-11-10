@@ -93,7 +93,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
                  Spacer(modifier = Modifier.height(8.dp))
              }
 
-             item {
+             /*item {
                  Text(
                      text = "Viajes Recientes",
                      fontSize = 16.sp,
@@ -111,7 +111,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
                  TripCard(trip)
                  Spacer(modifier = Modifier.height(8.dp))
              }
-
+               */
              // ✅ Quick Access to Scanner
              item {
                  QuickAccessButton(onNavigateToScanner = onNavigateToScanner)

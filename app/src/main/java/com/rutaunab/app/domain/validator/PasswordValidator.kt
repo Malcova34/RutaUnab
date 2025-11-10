@@ -9,22 +9,30 @@ object PasswordValidator {
      * Valida si una contraseña cumple los requisitos
      */
     fun validate(password: String): ValidationResult {
+        if (password.isBlank()) {
+            return ValidationResult.Invalid("La contraseña no puede estar vacía")
+        }
+
+        val length = password.length
+        if (length < MIN_LENGTH) {
+            return ValidationResult.Invalid("La contraseña debe tener al menos $MIN_LENGTH caracteres")
+        }
+        if (length > MAX_LENGTH) {
+            return ValidationResult.Invalid("La contraseña no puede tener más de $MAX_LENGTH caracteres")
+        }
+
+        var hasDigit = false
+        var hasLetter = false
+
+        for (char in password) {
+            if (char.isDigit() && !hasDigit) hasDigit = true
+            if (char.isLetter() && !hasLetter) hasLetter = true
+            if (hasDigit && hasLetter) break
+        }
+
         return when {
-            password.isBlank() -> {
-                ValidationResult.Invalid("La contraseña no puede estar vacía")
-            }
-            password.length < MIN_LENGTH -> {
-                ValidationResult.Invalid("La contraseña debe tener al menos $MIN_LENGTH caracteres")
-            }
-            password.length > MAX_LENGTH -> {
-                ValidationResult.Invalid("La contraseña no puede tener más de $MAX_LENGTH caracteres")
-            }
-            !password.any { it.isDigit() } -> {
-                ValidationResult.Invalid("La contraseña debe contener al menos un número")
-            }
-            !password.any { it.isLetter() } -> {
-                ValidationResult.Invalid("La contraseña debe contener al menos una letra")
-            }
+            !hasDigit -> ValidationResult.Invalid("La contraseña debe contener al menos un número")
+            !hasLetter -> ValidationResult.Invalid("La contraseña debe contener al menos una letra")
             else -> ValidationResult.Valid
         }
     }
@@ -46,15 +54,38 @@ object PasswordValidator {
      */
     fun getStrength(password: String): PasswordStrength {
         if (password.length < MIN_LENGTH) return PasswordStrength.WEAK
-        
+
         var strength = 0
-        
+        var hasDigit = false
+        var hasLower = false
+        var hasUpper = false
+        var hasSpecial = false
+
         if (password.length >= 8) strength++
-        if (password.any { it.isDigit() }) strength++
-        if (password.any { it.isLowerCase() }) strength++
-        if (password.any { it.isUpperCase() }) strength++
-        if (password.any { !it.isLetterOrDigit() }) strength++
-        
+
+        for (char in password) {
+            when {
+                char.isDigit() && !hasDigit -> {
+                    hasDigit = true
+                    strength++
+                }
+                char.isLowerCase() && !hasLower -> {
+                    hasLower = true
+                    strength++
+                }
+                char.isUpperCase() && !hasUpper -> {
+                    hasUpper = true
+                    strength++
+                }
+                !char.isLetterOrDigit() && !hasSpecial -> {
+                    hasSpecial = true
+                    strength++
+                }
+            }
+            // Early exit if all criteria are met
+            if (hasDigit && hasLower && hasUpper && hasSpecial) break
+        }
+
         return when {
             strength <= 2 -> PasswordStrength.WEAK
             strength == 3 -> PasswordStrength.MEDIUM

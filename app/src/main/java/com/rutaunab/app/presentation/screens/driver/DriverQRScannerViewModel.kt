@@ -77,7 +77,7 @@ class DriverQRScannerViewModel(
             _uiState.update { 
                 it.copy(
                     successScansToday = successCount,
-                    rejectedScansToday = 0 // TODO: Implementar contador de rechazados
+                    rejectedScansToday = 0
                 )
             }
         }

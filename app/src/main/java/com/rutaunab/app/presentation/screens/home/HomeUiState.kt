@@ -10,7 +10,7 @@ data class HomeUiState(
     val activeRoutesCount: Int = 0,
     val totalStops: Int = 0,
     val errorMessage: String? = null,
-    val showMapPlaceholder: Boolean = false, // Google Maps ya está implementado
+    val showMapPlaceholder: Boolean = false,
     val userLocation: LatLng? = null
 )
 

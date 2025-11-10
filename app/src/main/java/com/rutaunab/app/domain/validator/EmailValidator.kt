@@ -8,18 +8,19 @@ object EmailValidator {
      * Valida si un email es válido
      */
     fun validate(email: String): ValidationResult {
-        return when {
-            email.isBlank() -> {
-                ValidationResult.Invalid("El correo electrónico no puede estar vacío")
-            }
-            !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
-                ValidationResult.Invalid("El formato del correo electrónico no es válido")
-            }
-            !email.endsWith("@unab.com") && !email.endsWith("@.com") -> {
-                ValidationResult.Invalid("Debe usar su correo institucional UNAB (@unab.cl)")
-            }
-            else -> ValidationResult.Valid
+        if (email.isBlank()) {
+            return ValidationResult.Invalid("El correo electrónico no puede estar vacío")
         }
+
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            return ValidationResult.Invalid("El formato del correo electrónico no es válido")
+        }
+
+        if (!email.endsWith("@unab.cl") && !email.endsWith("@unab.com")) {
+            return ValidationResult.Invalid("Debe usar su correo institucional UNAB (@unab.cl)")
+        }
+
+        return ValidationResult.Valid
     }
     
     /**

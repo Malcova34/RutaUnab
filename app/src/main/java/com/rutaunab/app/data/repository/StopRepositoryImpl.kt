@@ -21,6 +21,16 @@ class StopRepositoryImpl(
         }
     }
 
+    override suspend fun getAllStops(): Result<List<Stop>> {
+        return try {
+            val stopDTOs = firestore.getAllStops()
+            val stops = stopDTOs.map { StopMapper.toDomain(it) }
+            Result.Success(stops)
+        } catch (e: Exception) {
+            Result.Error(e, "Error al obtener todos los paraderos: ${e.message}")
+        }
+    }
+
     override suspend fun getNearestStop(location: Location): Result<Stop> {
         return try {
             val stopDTOs = firestore.getAllStops()

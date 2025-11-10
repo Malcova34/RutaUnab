@@ -8,7 +8,9 @@ import com.rutaunab.app.data.firebase.auth.FirebaseAuthDataSource
 import com.rutaunab.app.data.firebase.firestore.FirestoreDataSource
 import com.rutaunab.app.data.location.LocationService
 import com.rutaunab.app.data.repository.AuthRepositoryImpl
+import com.rutaunab.app.data.repository.StopRepositoryImpl
 import com.rutaunab.app.domain.usecase.auth.GetCurrentUserUseCase
+import com.rutaunab.app.domain.usecase.stop.GetAllStopsUseCase
 import com.rutaunab.app.domain.util.Result
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
