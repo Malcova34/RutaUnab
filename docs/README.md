@@ -285,11 +285,11 @@ dependencies {
 
 ## 📄 Licencia
 
-Este proyecto está desarrollado para la Universidad Nacional Andrés Bello (UNAB) y es de uso exclusivo para la comunidad universitaria.
+Este proyecto está desarrollado para la  (UNAB) y es de uso exclusivo para la comunidad universitaria.
 
 ---
 
-**🎓 Universidad Nacional Andrés Bello**  
+**🎓 Universidad Unab**  
 **📱 Desarrollo Móvil Android**  
 **🚀 Versión 1.0.0**
 
