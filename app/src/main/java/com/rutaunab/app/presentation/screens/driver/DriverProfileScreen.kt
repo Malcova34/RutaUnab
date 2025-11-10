@@ -28,183 +28,127 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 
-@Composable
-fun DriverProfileScreen(
-    viewModel: DriverProfileViewModel = viewModel(),
-    onNavigateToScanner: () -> Unit = {},
-    onNavigateToProfile: () -> Unit = {},
-    onLogout: () -> Unit = {}
-) {
-    val uiState by viewModel.uiState.collectAsState()
-    var showLogoutDialog by remember { mutableStateOf(false) }
+ @Composable
+ fun DriverProfileScreen(
+     viewModel: DriverProfileViewModel = viewModel(),
+     onNavigateToScanner: () -> Unit = {},
+     onNavigateToProfile: () -> Unit = {},
+     onLogout: () -> Unit = {}
+ ) {
+     val uiState by viewModel.uiState.collectAsState()
 
-    Scaffold(
-        bottomBar = {
-            DriverBottomNavBar(
-                currentScreen = "profile",
-                onNavigateToScanner = onNavigateToScanner,
-                onNavigateToProfile = onNavigateToProfile
-            )
-        }
-    ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .background(
-                    Brush.verticalGradient(
-                        colors = listOf(
-                            Color(0xFFFFF8F0),
-                            Color.White,
-                            Color(0xFFFFF8F0)
-                        )
-                    )
-                )
-        ) {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                // Header
-                item {
-                    HeaderSection(
-                        driverName = uiState.driver?.name ?: "Conductor",
-                        driverId = uiState.driver?.id ?: "DRV-2024-001",
-                        busNumber = uiState.driver?.driverInfo?.assignedBusId ?: "Bus 101"
-                    )
-                }
+     Scaffold(
+         containerColor = Color(0xFFFFF8F0) // Fondo general uniforme
+     ) { paddingValues ->
+         LazyColumn(
+             modifier = Modifier
+                 .fillMaxSize()
+                 .padding(paddingValues), // Respeta el espacio del navbar automáticamente
+             horizontalAlignment = Alignment.CenterHorizontally
+         ) {
+             // ✅ Header: ahora va hasta arriba sin bordes extra
+             item {
+                 HeaderSection(
+                     driverName = uiState.driver?.name ?: "Conductor",
+                     driverId = uiState.driver?.id ?: "DRV-2024-001",
+                     busNumber = uiState.driver?.driverInfo?.assignedBusId ?: "Bus 101"
+                 )
+             }
 
-                item {
-                    Spacer(modifier = Modifier.height(32.dp))
-                }
+             item { Spacer(modifier = Modifier.height(16.dp)) }
 
-                // Statistics Card
-                item {
-                    StatisticsCard(
-                        tripsToday = uiState.tripsToday,
-                        hoursActive = uiState.hoursActive,
-                        passengersToday = uiState.passengersToday
-                    )
-                }
+             // ✅ Tarjeta de estadísticas
+             item {
+                 StatisticsCard(
+                     tripsToday = uiState.tripsToday,
+                     hoursActive = uiState.hoursActive,
+                     passengersToday = uiState.passengersToday
+                 )
+             }
 
-                item {
-                    Spacer(modifier = Modifier.height(24.dp))
-                }
+             item { Spacer(modifier = Modifier.height(16.dp)) }
 
-                // Driver Info
-                item {
-                    DriverInfoCard(driver = uiState.driver)
-                }
+             // ✅ Info personal
+             item { DriverInfoCard(driver = uiState.driver) }
 
-                item {
-                    Spacer(modifier = Modifier.height(24.dp))
-                }
+             item { Spacer(modifier = Modifier.height(16.dp)) }
 
-                // Schedule Title
-                item {
-                    Text(
-                        text = "Horario de Hoy",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1F2937),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 24.dp)
-                    )
-                }
+             // ✅ Horario
+             item {
+                 Text(
+                     text = "Horario de Hoy",
+                     fontSize = 16.sp,
+                     fontWeight = FontWeight.Bold,
+                     color = Color(0xFF1F2937),
+                     modifier = Modifier
+                         .fillMaxWidth()
+                         .padding(horizontal = 20.dp)
+                 )
+             }
 
-                item {
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
+             item { Spacer(modifier = Modifier.height(12.dp)) }
 
-                items(uiState.schedule) { shift ->
-                    ScheduleShiftCard(shift)
-                    Spacer(modifier = Modifier.height(12.dp))
-                }
+             items(uiState.schedule) { shift ->
+                 ScheduleShiftCard(shift)
+                 Spacer(modifier = Modifier.height(8.dp))
+             }
 
-                // Recent Trips Title
-                item {
-                    Text(
-                        text = "Viajes Recientes",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1F2937),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 24.dp)
-                    )
-                }
+             item {
+                 Text(
+                     text = "Viajes Recientes",
+                     fontSize = 16.sp,
+                     fontWeight = FontWeight.Bold,
+                     color = Color(0xFF1F2937),
+                     modifier = Modifier
+                         .fillMaxWidth()
+                         .padding(horizontal = 20.dp)
+                 )
+             }
 
-                item {
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
+             item { Spacer(modifier = Modifier.height(12.dp)) }
 
-                items(uiState.recentTrips) { trip ->
-                    TripCard(trip)
-                    Spacer(modifier = Modifier.height(12.dp))
-                }
+             items(uiState.recentTrips.take(3)) { trip ->
+                 TripCard(trip)
+                 Spacer(modifier = Modifier.height(8.dp))
+             }
 
-                // Logout Button
-                item {
-                    LogoutButton(onClick = { showLogoutDialog = true })
-                }
+             // ✅ Quick Access to Scanner
+             item {
+                 QuickAccessButton(onNavigateToScanner = onNavigateToScanner)
+             }
 
-                item {
-                    Spacer(modifier = Modifier.height(24.dp))
-                }
-            }
-        }
-        
-        // Logout Confirmation Dialog
-        if (showLogoutDialog) {
-            AlertDialog(
-                onDismissRequest = { showLogoutDialog = false },
-                containerColor = Color.White,
-                title = {
-                    Text(
-                        text = "¿Cerrar sesión?",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1F2937)
-                    )
-                },
-                text = {
-                    Text(
-                        text = "¿Estás seguro de que deseas cerrar tu sesión de conductor?",
-                        fontSize = 14.sp,
-                        color = Color(0xFF6B7280)
-                    )
-                },
-                confirmButton = {
-                    Button(
-                        onClick = {
-                            showLogoutDialog = false
-                            viewModel.logout(onLogout)
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFEF4444)
-                        )
-                    ) {
-                        Text(
-                            text = "Cerrar sesión",
-                            color = Color.White
-                        )
-                    }
-                },
-                dismissButton = {
-                    TextButton(
-                        onClick = { showLogoutDialog = false }
-                    ) {
-                        Text(
-                            text = "Cancelar",
-                            color = Color(0xFF6B7280)
-                        )
-                    }
-                }
-            )
-        }
-    }
-}
+             item { Spacer(modifier = Modifier.height(16.dp)) }
+
+             // ✅ Logout Button
+             item {
+                 OutlinedButton(
+                     onClick = {
+                         viewModel.logout(onLogoutComplete = onLogout)
+                     },
+                     modifier = Modifier
+                         .fillMaxWidth()
+                         .padding(horizontal = 20.dp),
+                     colors = ButtonDefaults.outlinedButtonColors(
+                         contentColor = Color(0xFFEF4444)
+                     ),
+                     border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFEF4444))
+                 ) {
+                     Icon(
+                         imageVector = Icons.Default.Logout,
+                         contentDescription = "Cerrar Sesión",
+                         modifier = Modifier.size(20.dp)
+                     )
+                     Spacer(modifier = Modifier.width(8.dp))
+                     Text("Cerrar Sesión")
+                 }
+             }
+
+             item { Spacer(modifier = Modifier.height(40.dp)) } // margen extra para no chocar con el navbar
+         }
+
+     }
+ }
+
 
 @Composable
 private fun HeaderSection(
@@ -223,7 +167,7 @@ private fun HeaderSection(
                     )
                 )
             )
-            .padding(horizontal = 24.dp, vertical = 24.dp)
+            .padding(horizontal = 20.dp, vertical = 20.dp)
     ) {
         Column {
             Row(
@@ -340,27 +284,27 @@ private fun StatisticsCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 24.dp),
-        shape = RoundedCornerShape(16.dp),
+            .padding(horizontal = 20.dp),
+        shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(14.dp)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     imageVector = Icons.Default.CalendarToday,
                     contentDescription = null,
                     tint = Color(0xFFFEA604),
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(18.dp)
                 )
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(6.dp))
                 Text(
                     text = "Estadísticas de Hoy",
-                    fontSize = 18.sp,
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF1F2937)
                 )
@@ -432,10 +376,10 @@ private fun DriverInfoCard(driver: com.rutaunab.app.domain.model.User?) {
         ) {
             Text(
                 text = "Información Personal",
-                fontSize = 18.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFF1F2937),
-                modifier = Modifier.padding(bottom = 16.dp)
+                modifier = Modifier.padding(bottom = 12.dp)
             )
 
             InfoRow(
@@ -539,15 +483,15 @@ private fun ScheduleShiftCard(shift: ScheduleShift) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 24.dp),
-        shape = RoundedCornerShape(12.dp),
+            .padding(horizontal = 20.dp),
+        shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(containerColor = backgroundColor),
         border = androidx.compose.foundation.BorderStroke(1.dp, borderColor)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
+                .padding(10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
@@ -702,59 +646,84 @@ private fun TripCard(trip: Trip) {
 }
 
 @Composable
-private fun LogoutButton(onClick: () -> Unit) {
-    Card(
+private fun ActionButtons(onNavigateToHome: () -> Unit) {
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 24.dp),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFFEF2F2)),
-        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFFECACA))
+            .padding(horizontal = 20.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickableWithoutRipple { onClick() }
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+        Button(
+            onClick = { /* TODO: Edit profile */ },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFEA604)),
+            shape = RoundedCornerShape(12.dp)
         ) {
-            Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0xFFEF4444)),
-                contentAlignment = Alignment.Center
+            Text(
+                text = "Editar Perfil",
+                color = Color.White,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+
+        OutlinedButton(
+            onClick = onNavigateToHome,
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.outlinedButtonColors(
+                contentColor = Color(0xFF6B7280)
+            ),
+            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE5E7EB)),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Text(
+                text = "Volver al Inicio",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+    }
+}
+
+@Composable
+private fun QuickAccessButton(onNavigateToScanner: () -> Unit) {
+    Surface(
+        onClick = onNavigateToScanner,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp),
+        shape = RoundedCornerShape(12.dp),
+        color = Color.Transparent,
+        shadowElevation = 4.dp
+    ) {
+        Box(
+            modifier = Modifier
+                .background(
+                    Brush.horizontalGradient(
+                        colors = listOf(Color(0xFFFEA604), Color(0xFFFEB92C))
+                    )
+                )
+                .padding(vertical = 16.dp, horizontal = 24.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
             ) {
                 Icon(
-                    imageVector = Icons.Default.Logout,
+                    imageVector = Icons.Default.QrCodeScanner,
                     contentDescription = null,
                     tint = Color.White,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(20.dp)
                 )
-            }
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            Column(modifier = Modifier.weight(1f)) {
+                Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Cerrar Sesión",
+                    text = "Ir al Escáner QR",
+                    color = Color.White,
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFFDC2626)
-                )
-                Text(
-                    text = "Salir de tu cuenta de conductor",
-                    fontSize = 13.sp,
-                    color = Color(0xFFEF4444)
+                    fontWeight = FontWeight.SemiBold
                 )
             }
-
-            Icon(
-                imageVector = Icons.Default.ArrowForward,
-                contentDescription = null,
-                tint = Color(0xFFEF4444),
-                modifier = Modifier.size(20.dp)
-            )
         }
     }
 }

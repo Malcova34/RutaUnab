@@ -1,5 +1,9 @@
 package com.rutaunab.app.presentation.screens.main.map
 
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -19,9 +23,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
@@ -38,7 +44,50 @@ fun MapScreen(
     onNavigateToMap: () -> Unit = {},
     onNavigateToProfile: () -> Unit = {}
 ) {
+    val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
+
+    // Launcher para solicitar permisos de ubicación
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val fineLocationGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false
+        val coarseLocationGranted = permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false
+
+        if (fineLocationGranted || coarseLocationGranted) {
+            // Permisos concedidos, inicializar ubicación
+            viewModel.requestLocationPermission()
+        } else {
+            // Permisos denegados, usar ubicación por defecto
+            viewModel.onLocationPermissionDenied()
+        }
+    }
+
+    // Verificar y solicitar permisos al iniciar
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        val hasFineLocation = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+        val hasCoarseLocation = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+        if (!hasFineLocation && !hasCoarseLocation) {
+            // Solicitar permisos
+            locationPermissionLauncher.launch(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            )
+        } else {
+            // Ya tiene permisos, inicializar ubicación
+            viewModel.requestLocationPermission()
+        }
+    }
 
     Scaffold(
         bottomBar = {
@@ -66,17 +115,17 @@ fun MapScreen(
                     onLayersClick = { /* TODO: Implementar cambio de tipo de mapa */ }
                 )
 
-                // Google Maps
+                // Google Maps - Fixed height to prevent resizing
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(1f)
+                        .height(400.dp) // Fixed height instead of weight
                 ) {
                     GoogleMapView(
                         uiState = uiState,
                         onCameraMoved = viewModel::onCameraMoved
                     )
-                    
+
                     // Botón "Mi ubicación"
                     FloatingActionButton(
                         onClick = viewModel::onCenterToUserLocation,
@@ -218,11 +267,11 @@ private fun GoogleMapView(
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState,
         properties = MapProperties(
-            isMyLocationEnabled = false
+            isMyLocationEnabled = true
         ),
         uiSettings = MapUiSettings(
             zoomControlsEnabled = false,
-            myLocationButtonEnabled = false,
+            myLocationButtonEnabled = true,
             compassEnabled = true
         )
     ) {
@@ -236,16 +285,17 @@ private fun GoogleMapView(
             )
         }
 
-        // Bus Markers
+        // Bus Markers with Material Icons
         uiState.activeBuses.forEach { bus ->
             // Filtrar por ruta seleccionada
             if (uiState.selectedRoute == null || uiState.selectedRoute == "Todas" || bus.route == uiState.selectedRoute) {
+                // Usar icono de bus de Material Design
                 val markerColor = when (bus.route) {
                     "Ruta 1" -> BitmapDescriptorFactory.HUE_BLUE
                     "Ruta 2" -> BitmapDescriptorFactory.HUE_GREEN
                     else -> BitmapDescriptorFactory.HUE_RED
                 }
-                
+
                 Marker(
                     state = MarkerState(position = bus.latLng),
                     title = bus.route,

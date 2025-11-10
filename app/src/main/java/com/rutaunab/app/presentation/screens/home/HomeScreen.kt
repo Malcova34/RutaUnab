@@ -1,5 +1,10 @@
 package com.rutaunab.app.presentation.screens.home
 
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -16,14 +21,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.*
+import com.rutaunab.app.R
 import com.rutaunab.app.presentation.components.BottomNavBar
 
 @Composable
@@ -34,7 +41,50 @@ fun HomeScreen(
     onNavigateToQR: () -> Unit = {},
     onNavigateToMap: () -> Unit = {}
 ) {
+    val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
+
+    // Launcher para solicitar permisos de ubicación
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val fineLocationGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false
+        val coarseLocationGranted = permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false
+
+        if (fineLocationGranted || coarseLocationGranted) {
+            // Permisos concedidos, inicializar ubicación
+            viewModel.requestLocationPermission()
+        } else {
+            // Permisos denegados, usar ubicación por defecto
+            viewModel.onLocationPermissionDenied()
+        }
+    }
+
+    // Verificar y solicitar permisos al iniciar
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        val hasFineLocation = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+        val hasCoarseLocation = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+        if (!hasFineLocation && !hasCoarseLocation) {
+            // Solicitar permisos
+            locationPermissionLauncher.launch(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            )
+        } else {
+            // Ya tiene permisos, inicializar ubicación
+            viewModel.requestLocationPermission()
+        }
+    }
 
     Scaffold(
         bottomBar = {
@@ -72,10 +122,9 @@ fun HomeScreen(
                 )
             }
 
-            // Google Maps Container
+            // Routes Section with Images
             item {
-                MapSection(
-                    showPlaceholder = uiState.showMapPlaceholder,
+                RoutesWithImagesSection(
                     modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp)
                 )
             }
@@ -235,50 +284,67 @@ private fun StatCard(
 }
 
 @Composable
-private fun MapSection(
-    showPlaceholder: Boolean,
+private fun RoutesWithImagesSection(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
         Text(
-            text = "Mapa de Rutas",
+            text = "Rutas Disponibles",
             fontSize = 18.sp,
             fontWeight = FontWeight.SemiBold,
             color = Color(0xFF1F2937),
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(256.dp),
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
-            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        // Ruta 1
+        RouteWithImageCard(
+            routeName = "Ruta 1",
+            imageResId = R.drawable.ruta1,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+
+        // Ruta 2
+        RouteWithImageCard(
+            routeName = "Ruta 2",
+            imageResId = R.drawable.ruta2,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+    }
+}
+
+@Composable
+private fun RouteWithImageCard(
+    routeName: String,
+    imageResId: Int,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth()
         ) {
-            // Ubicación de la UNAB (coordenadas de ejemplo - ajustar según campus)
-            val unabLocation = LatLng(-33.034890, -71.532750) // UNAB Viña del Mar
-            
-            val cameraPositionState = rememberCameraPositionState {
-                position = CameraPosition.fromLatLngZoom(unabLocation, 15f)
-            }
-            
-            GoogleMap(
-                modifier = Modifier.fillMaxSize(),
-                cameraPositionState = cameraPositionState,
-                uiSettings = MapUiSettings(
-                    zoomControlsEnabled = true,
-                    zoomGesturesEnabled = true,
-                    scrollGesturesEnabled = true
-                )
-            ) {
-                // Marcador en la ubicación de la UNAB
-                Marker(
-                    state = MarkerState(position = unabLocation),
-                    title = "Universidad Andrés Bello",
-                    snippet = "Campus Viña del Mar"
-                )
-            }
+            // Título de la ruta
+            Text(
+                text = routeName,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color(0xFF1F2937),
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+            )
+
+            // Imagen de la ruta
+            Image(
+                painter = painterResource(id = imageResId),
+                contentDescription = "Imagen de $routeName",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp),
+                contentScale = ContentScale.Crop
+            )
         }
     }
 }

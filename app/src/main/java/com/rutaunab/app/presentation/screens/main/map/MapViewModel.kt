@@ -41,7 +41,7 @@ class MapViewModel(
     init {
         loadMapData()
         startAutoRefresh()
-        observeUserLocation()
+        // observeUserLocation() se llamará después de verificar permisos
     }
 
     private fun loadMapData() {
@@ -215,6 +215,24 @@ class MapViewModel(
     fun onCenterToUserLocation() {
         _uiState.value.userLocation?.let { location ->
             _uiState.update { it.copy(shouldCenterOnUser = true) }
+        }
+    }
+
+    fun requestLocationPermission() {
+        // Forzar la inicialización de ubicación cuando se conceden permisos
+        observeUserLocation()
+        // Intentar obtener la ubicación actual inmediatamente
+        viewModelScope.launch {
+            locationService?.getLastLocation()?.let { location ->
+                _uiState.update { it.copy(userLocation = location, shouldCenterOnUser = true) }
+            }
+        }
+    }
+
+    fun onLocationPermissionDenied() {
+        // Usar ubicación por defecto cuando se deniegan permisos
+        _uiState.update {
+            it.copy(userLocation = LatLng(7.119444, -73.120833)) // Bucaramanga centro
         }
     }
     

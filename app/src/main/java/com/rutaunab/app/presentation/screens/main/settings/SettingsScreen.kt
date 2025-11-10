@@ -129,33 +129,6 @@ fun SettingsScreen(
                     SettingsCard {
                         SettingToggleItem(
                             icon = Icons.Default.DarkMode,
-                            label = "Modo oscuro",
-                            checked = uiState.darkModeEnabled,
-                            onCheckedChange = viewModel::toggleDarkMode
-                        )
-                        Divider(color = Color(0xFFE5E7EB))
-                        SettingNavigationItem(
-                            icon = Icons.Default.Language,
-                            label = "Idioma",
-                            value = uiState.language,
-                            onClick = { /* TODO */ }
-                        )
-                    }
-                }
-
-                item {
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
-
-                // Apariencia Section
-                item {
-                    SectionTitle(title = "Apariencia")
-                }
-
-                item {
-                    SettingsCard {
-                        SettingToggleItem(
-                            icon = Icons.Default.DarkMode,
                             label = "Modo Oscuro",
                             description = "Tema oscuro para la aplicación",
                             checked = uiState.darkModeEnabled,

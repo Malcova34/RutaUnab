@@ -1,5 +1,6 @@
 package com.rutaunab.app.presentation.screens.driver
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -47,13 +48,7 @@ fun DriverQRScannerScreen(
     val cameraPermissionState = rememberPermissionState(android.Manifest.permission.CAMERA)
 
     Scaffold(
-        bottomBar = {
-            DriverBottomNavBar(
-                currentScreen = "scanner",
-                onNavigateToScanner = onNavigateToScanner,
-                onNavigateToProfile = onNavigateToProfile
-            )
-        }
+        containerColor = Color(0xFFFFF8F0)
     ) { paddingValues ->
         Box(
             modifier = Modifier
@@ -79,7 +74,7 @@ fun DriverQRScannerScreen(
                 }
 
                 item {
-                    Spacer(modifier = Modifier.height(32.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
                 }
 
                 // Scanner Card
@@ -93,7 +88,7 @@ fun DriverQRScannerScreen(
                 }
 
                 item {
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
 
                 // Stats Cards
@@ -105,29 +100,29 @@ fun DriverQRScannerScreen(
                 }
 
                 item {
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
 
                 // Recent Scans Title
                 item {
                     Text(
                         text = "Últimos escaneos",
-                        fontSize = 18.sp,
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF1F2937),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 24.dp)
+                            .padding(horizontal = 20.dp)
                     )
                 }
 
                 item {
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
                 }
 
-                items(uiState.recentScans) { scan ->
+                items(uiState.recentScans.take(5)) { scan ->
                     RecentScanCard(scan)
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
 
                 // Help Card
@@ -136,7 +131,33 @@ fun DriverQRScannerScreen(
                 }
 
                 item {
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+
+                // Profile Button
+                item {
+                    OutlinedButton(
+                        onClick = onNavigateToProfile,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = Color(0xFFFEA604)
+                        ),
+                        border = BorderStroke(1.dp, Color(0xFFFEA604))
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = "Perfil",
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Ver Mi Perfil")
+                    }
+                }
+
+                item {
+                    Spacer(modifier = Modifier.height(32.dp))
                 }
             }
         }
@@ -156,7 +177,7 @@ private fun HeaderSection() {
                     )
                 )
             )
-            .padding(horizontal = 24.dp, vertical = 24.dp)
+            .padding(horizontal = 20.dp, vertical = 20.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -206,7 +227,8 @@ private fun ScannerCard(
             .padding(horizontal = 24.dp),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+        border = androidx.compose.foundation.BorderStroke(2.dp, Color(0xFFFEA604))
     ) {
         Column {
             // Camera Scanner
@@ -219,7 +241,7 @@ private fun ScannerCard(
                 if (cameraPermissionGranted) {
                     // Escáner QR real
                     val lifecycleOwner = LocalLifecycleOwner.current
-                    
+
                     AndroidView(
                         factory = { context ->
                             DecoratedBarcodeView(context).apply {
@@ -230,7 +252,7 @@ private fun ScannerCard(
                                         }
                                     }
                                 }
-                                
+
                                 barcodeView.decodeContinuous(callback)
                                 resume()
                             }
@@ -240,19 +262,27 @@ private fun ScannerCard(
                             view.resume()
                         }
                     )
-                    
+
                     DisposableEffect(Unit) {
                         onDispose {
                             // Cleanup cuando se destruya la vista
                         }
                     }
-                    
+
                     // Overlay con marco de escaneo
                     Box(
                         modifier = Modifier
                             .size(240.dp)
                             .border(4.dp, Color(0xFFFEA604), RoundedCornerShape(16.dp))
-                    )
+                    ) {
+                        // Scanning line animation
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(2.dp)
+                                .background(Color(0xFFFEA604))
+                        )
+                    }
                 } else {
                     // Solicitar permiso de cámara
                     Column(
@@ -295,7 +325,7 @@ private fun ScannerCard(
                         }
                     }
                 }
-                
+
                 // Resultado del escaneo (overlay)
                 scanResult?.let { result ->
                     ScanResultOverlay(
@@ -304,6 +334,13 @@ private fun ScannerCard(
                     )
                 }
             }
+
+            // Divider
+            androidx.compose.material3.Divider(
+                color = Color(0xFFFEA604),
+                thickness = 2.dp,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
 
             // Instructions
             Column(
@@ -338,7 +375,7 @@ private fun ScanResultOverlay(
         kotlinx.coroutines.delay(2500) // Mostrar por 2.5 segundos
         onDismiss()
     }
-    
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -499,9 +536,9 @@ private fun StatsCards(successScans: Int, rejectedScans: Int) {
 
 @Composable
 private fun RecentScanCard(scan: ScannedStudent) {
-    val backgroundColor = if (scan.status == com.rutaunab.app.domain.model.ScanStatus.SUCCESS) 
+    val backgroundColor = if (scan.status == com.rutaunab.app.domain.model.ScanStatus.SUCCESS)
         Color(0xFFF0FDF4) else Color(0xFFFEF2F2)
-    val iconColor = if (scan.status == com.rutaunab.app.domain.model.ScanStatus.SUCCESS) 
+    val iconColor = if (scan.status == com.rutaunab.app.domain.model.ScanStatus.SUCCESS)
         Color(0xFF10B981) else Color(0xFFEF4444)
 
     Card(
@@ -525,7 +562,7 @@ private fun RecentScanCard(scan: ScannedStudent) {
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = if (scan.status == com.rutaunab.app.domain.model.ScanStatus.SUCCESS) 
+                    imageVector = if (scan.status == com.rutaunab.app.domain.model.ScanStatus.SUCCESS)
                         Icons.Default.CheckCircle else Icons.Default.Cancel,
                     contentDescription = null,
                     tint = Color.White,

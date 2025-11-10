@@ -1,5 +1,6 @@
 package com.rutaunab.app.presentation.screens.home
 
+import com.google.android.gms.maps.model.LatLng
 import com.rutaunab.app.domain.model.User
 
 data class HomeUiState(
@@ -9,7 +10,8 @@ data class HomeUiState(
     val activeRoutesCount: Int = 0,
     val totalStops: Int = 0,
     val errorMessage: String? = null,
-    val showMapPlaceholder: Boolean = false // Google Maps ya está implementado
+    val showMapPlaceholder: Boolean = false, // Google Maps ya está implementado
+    val userLocation: LatLng? = null
 )
 
 data class RouteInfo(
