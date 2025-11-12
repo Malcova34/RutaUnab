@@ -5,7 +5,7 @@
 [![Firebase](https://img.shields.io/badge/Firebase-33.1.2-orange.svg)](https://firebase.google.com/)
 [![Compose](https://img.shields.io/badge/Jetpack%20Compose-1.7.8-blue.svg)](https://developer.android.com/jetpack/compose)
 
-Una aplicación móvil completa para el sistema de transporte universitario de la Universidad Nacional Andrés Bello (UNAB), desarrollada con arquitectura Clean Architecture, MVVM y las mejores prácticas de desarrollo Android moderno.
+Una aplicación móvil completa para el sistema de transporte universitario de la (UNAB), desarrollada con arquitectura Clean Architecture, MVVM y las mejores prácticas de desarrollo Android moderno.
 
 ## 📋 Tabla de Contenidos
 
