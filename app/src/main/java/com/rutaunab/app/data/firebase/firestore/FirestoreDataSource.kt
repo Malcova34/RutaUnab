@@ -13,7 +13,7 @@ class FirestoreDataSource(
     
     companion object {
         private const val USERS_COLLECTION = "users"
-        // private const val BUSES_COLLECTION = "buses"  // TODO: Implementar en el futuro si se necesita
+        // private const val BUSES_COLLECTION = "buses"
         private const val ROUTES_COLLECTION = "routes"
         private const val STOPS_COLLECTION = "stops"
     }
@@ -61,43 +61,7 @@ class FirestoreDataSource(
             .await()
     }
     
-    // ========== BUS OPERATIONS ==========
-    // TODO: Implementar operaciones de buses en Firestore si se necesita en el futuro
-    // Por ahora, los buses se obtienen desde la API XML en tiempo real
-    
-    /*
-    suspend fun getAllBuses(): List<BusDTO> {
-        return firestore.collection(BUSES_COLLECTION)
-            .get()
-            .await()
-            .documents
-            .mapNotNull { it.toObject<BusDTO>() }
-    }
-    
-    fun observeActiveBuses(): Flow<List<BusDTO>> = callbackFlow {
-        val listener = firestore.collection(BUSES_COLLECTION)
-            .whereEqualTo("status", "ACTIVE")
-            .addSnapshotListener { snapshot, error ->
-                if (error != null) {
-                    close(error)
-                    return@addSnapshotListener
-                }
-                
-                val buses = snapshot?.documents?.mapNotNull { it.toObject<BusDTO>() } ?: emptyList()
-                trySend(buses)
-            }
-        
-        awaitClose { listener.remove() }
-    }
-    
-    suspend fun updateBusLocation(busId: String, location: LocationDTO) {
-        firestore.collection(BUSES_COLLECTION)
-            .document(busId)
-            .update("currentLocation", location, "lastUpdated", System.currentTimeMillis())
-            .await()
-    }
-    */
-    
+   
     // ========== ROUTE OPERATIONS ==========
     
     suspend fun getAllRoutes(): List<RouteDTO> {

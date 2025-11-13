@@ -14,12 +14,7 @@ import com.rutaunab.app.data.local.PreferencesManager
 import com.rutaunab.app.presentation.navigation.NavGraph
 import com.rutaunab.app.presentation.ui.theme.RutaUnabTheme
 
-/**
- * MainActivity - Actividad principal de la aplicación RutaUNAB
- *
- * Esta actividad configura el tema de la aplicación basado en las preferencias del usuario
- * y establece el NavGraph como contenido principal usando Jetpack Compose.
- */
+
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -22,7 +22,7 @@ import java.util.*
 
 class SettingsViewModel(
     private val context: Context? = null,
-    // TODO: Inyectar con Hilt cuando esté configurado
+
     private val getCurrentUserUseCase: GetCurrentUserUseCase = GetCurrentUserUseCase(
         AuthRepositoryImpl(
             FirebaseAuthDataSource(),

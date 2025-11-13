@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ProfileViewModel(
-    // TODO: Inyectar con Hilt cuando esté configurado
+
     private val getCurrentUserUseCase: GetCurrentUserUseCase = GetCurrentUserUseCase(
         AuthRepositoryImpl(
             FirebaseAuthDataSource(),

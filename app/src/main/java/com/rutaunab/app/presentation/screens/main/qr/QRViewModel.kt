@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class QRViewModel(
-    // TODO: Inyectar con Hilt cuando esté configurado
+
     private val getCurrentUserUseCase: GetCurrentUserUseCase = GetCurrentUserUseCase(
         AuthRepositoryImpl(
             FirebaseAuthDataSource(),

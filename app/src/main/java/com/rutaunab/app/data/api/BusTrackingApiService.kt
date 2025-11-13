@@ -9,12 +9,7 @@ import retrofit2.http.GET
  */
 interface BusTrackingApiService {
     
-    /**
-     * Obtiene la lista de todos los buses con su última ubicación
-     * El endpoint devuelve un JSON array
-     * 
-     * Endpoint completo: https://api2.gpsmobile.net/api/rep-actual/ultimo-avl/d6871041==
-     */
+
     @GET("api/rep-actual/ultimo-avl/d6871041==")
     suspend fun getBusesLocation(): Response<List<BusApiDTO>>
 }

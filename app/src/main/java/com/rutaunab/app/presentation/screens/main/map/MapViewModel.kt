@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 
 class MapViewModel(
     private val context: Context? = null,
-    // TODO: Inyectar con Hilt cuando esté configurado
+
     private val getBusesLocationUseCase: GetBusesLocationUseCase = GetBusesLocationUseCase(
         BusRepositoryImpl(
             BusTrackingDataSource()

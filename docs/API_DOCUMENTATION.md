@@ -564,17 +564,4 @@ data class BusApiDTO(
 )
 ```
 
-## 📚 Referencias y Documentación
 
-- [Firebase Documentation](https://firebase.google.com/docs)
-- [Google Maps SDK](https://developers.google.com/maps/documentation/android-sdk)
-- [Retrofit Documentation](https://square.github.io/retrofit/)
-- [ZXing Documentation](https://github.com/zxing/zxing)
-- [Android Notification Guide](https://developer.android.com/guide/topics/ui/notifiers/notifications)
-
----
-
-**🔗 Conexiones:**
-- [Setup Guide](SETUP.md) - Cómo configurar las APIs
-- [Data Layer](DATA_LAYER.md) - Implementación de las APIs
-- [Features](FEATURES.md) - Funcionalidades que usan estas APIs

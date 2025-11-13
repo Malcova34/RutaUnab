@@ -285,7 +285,7 @@ dependencies {
 
 ## 📄 Licencia
 
-Este proyecto está desarrollado para la  (UNAB) y es de uso exclusivo para la comunidad universitaria.
+Este proyecto está desarrollado para la (UNAB) y es de uso exclusivo para la comunidad universitaria.
 
 ---
 
@@ -293,4 +293,3 @@ Este proyecto está desarrollado para la  (UNAB) y es de uso exclusivo para la c
 **📱 Desarrollo Móvil Android**  
 **🚀 Versión 1.0.0**
 
-¡Gracias por usar RutaUNAB! 🚌✨
