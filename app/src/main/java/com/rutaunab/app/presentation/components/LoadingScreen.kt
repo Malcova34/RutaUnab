@@ -1,4 +1,4 @@
-package com.rutaunab.app.presentation.components
+package  com.rutaunab.app.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
